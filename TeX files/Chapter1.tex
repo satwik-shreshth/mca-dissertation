@@ -1,0 +1,217 @@
+% ── Chapter 1: Introduction ──────────────────────────────────
+
+\chapter{Introduction}
+
+\section{Background and Recent Research}
+
+Environmental monitoring has always mattered, but the stakes have grown
+considerably in recent years. Rising concerns around indoor air quality,
+urban heat, and industrial emissions have pushed the need for
+\emph{continuous, real-time} data collection well beyond what
+traditional fixed-station systems can offer. Parameters such as
+temperature, humidity, and CO$_2$ concentration are not just numbers on
+a screen; they inform public health decisions, drive building
+automation, and shape environmental compliance. The trouble is that
+most deployments today anchor a sensor to a wall and call it done,
+which works reasonably well for a rooftop weather station but fails
+the moment conditions vary across space, as they almost always do in
+real buildings and work environments.
+
+IoT has changed what is practically achievable.
+Cheap microcontrollers, affordable wireless modules, and accessible
+cloud platforms mean that a researcher or engineer can now build a
+system that reads sensor data every few seconds, stores it locally
+in a database, and pushes it to a cloud backend accessible from
+anywhere in the world, all for a fraction of what this would have
+cost a decade ago \cite{r1,r2}. IoT-based pollution monitors, indoor
+air quality dashboards, and distributed sensor networks have all
+benefited. The persistent limitation, however, is that these systems
+remain static. A Raspberry Pi sitting on a shelf does excellent work
+as a fixed monitor, but it cannot tell you what the air quality
+looks like five metres to the left.
+
+Communication infrastructure is the glue that holds distributed
+monitoring together. Systems that cannot reliably transmit their data
+are not particularly useful, however good their sensors are. A lot of
+research has gone into vehicular communication protocols, secure
+data exchange, and network architecture for distributed systems
+\cite{r3,r4}, and those foundations carry over directly to IoT
+monitoring applications. HTTP-based communication through a lightweight
+framework like Flask has proven to be a practical middle ground for
+embedded deployments, being simpler to set up than a full MQTT broker,
+and sufficient for the polling intervals that environmental monitoring
+typically requires.
+
+In mobile robotics, the story has followed a somewhat separate track.
+Foundational work in vision-guided navigation showed that image-based
+control was feasible even with the hardware of the late 1990s
+\cite{r5}. Subsequent research on homography-based visual servoing
+and adaptive trajectory tracking extended these ideas into richer
+control scenarios with experimental validation \cite{r6,r7,r8}.
+Control strategies for differential-drive platforms (PID, Model
+Predictive Control, and fuzzy logic) have all been tested and compared,
+with PID consistently emerging as the preferred choice for structured
+indoor environments because it is straightforward to tune and
+well-understood \cite{r9,r10,r11}.
+
+The perception side of robotics has been transformed by deep learning.
+Instance segmentation models can now detect and outline paths, lanes,
+and obstacles in real time, even on embedded processors without a
+dedicated GPU \cite{r12,r13}. The challenge has shifted from
+\emph{whether} vision-based navigation is possible to \emph{how
+efficiently} it can run on low-power hardware.
+
+The gap that persists across all of this is integration. Most research
+picks one thread (sensing, communication, or navigation) and develops
+it carefully while treating the others as secondary. A system that
+simultaneously moves through a space, collects environmental data, and
+makes that data available in real time across multiple platforms has
+received comparatively little attention. This work is an attempt to
+close that gap in a practical and reproducible way.
+
+\section{Motivation}
+
+A single CO$_2$ sensor placed in one corner of a room tells you
+nothing about what conditions are like near the other corner, especially
+in large or open-plan spaces where ventilation is uneven. Achieving
+real spatial coverage with fixed sensors requires a dense and expensive
+grid of monitoring points. Mounting the sensor on a mobile robot that
+drives a repeatable path through the space is a far simpler and more
+cost-effective alternative, since the coverage goes where the robot goes.
+
+The motivation here extends beyond mobility alone. The design
+philosophy throughout this project was to keep the two subsystems,
+namely the robot and the environmental monitor, genuinely independent of each
+other. The monitoring system operates correctly whether or not it is
+sitting on a robot; the robot operates correctly whether or not it is
+carrying sensor hardware. This separation is intentional. It makes
+each part easier to develop, test, and maintain in isolation, and it
+means the combined system can be extended in either direction without
+breaking the other half.
+
+Flask-based HTTP communication was chosen as the interface layer for
+the same practical reasons. It is familiar, easy to debug, and
+integrates naturally with Firebase, ThingSpeak, and any browser-based
+dashboard. There is no dependency on proprietary APIs or dedicated
+message brokers. Anyone with a Raspberry Pi and a network connection
+can replicate it.
+
+The simplest statement of the motivation is this: to build a complete
+and working system that combines a robot that follows a path
+autonomously, a sensor unit that reads temperature, humidity, and air
+quality in real time, and a communication layer that makes all of that
+data accessible both locally and on the cloud, and to validate every
+part of it experimentally.
+
+\section{Problem Statement}
+
+Fixed environmental monitoring stations are limited to a single
+location. For many practical scenarios such as warehouse air quality surveys,
+greenhouse inspections, and multi-zone occupancy monitoring, a static
+reading captures only a small slice of the full picture. Environmental
+conditions vary spatially, sometimes significantly, and a single fixed
+sensor can produce data that is accurate for its exact location but
+unrepresentative of the space as a whole.
+
+Mobile robotic platforms offer a way around this, but most existing
+approaches either couple sensing and navigation so tightly that the
+system is hard to modify, or treat them as fully separate concerns that
+are never actually combined into a working platform. Research on
+communication focuses on network-level performance metrics \cite{r4},
+while robotics research concentrates on navigation and control
+algorithms \cite{r8,r10}. The two areas rarely meet in a single,
+deployed, experimentally validated system.
+
+Data accessibility is another unresolved issue. A robot collecting
+environmental data that is available only through a direct USB
+connection or stored on a local SD card misses most of the practical
+value. The data needs to be queryable from any device, in real time,
+without requiring specialist software on the client side.
+
+These gaps define the central problem this work addresses: the absence
+of a modular, integrated, and practically deployable framework that
+combines autonomous mobile navigation, real-time environmental sensing,
+and multi-platform cloud communication in a single working system.
+
+\section{Objectives of the Study}
+
+The primary objectives of this research are:
+
+\begin{enumerate}
+    \item To design and develop a real-time environmental monitoring
+          system capable of acquiring temperature, humidity, and air
+          quality data from sensor hardware.
+    \item To integrate the monitoring system with a mobile robotic
+          platform, enabling dynamic data collection across a physical
+          space.
+    \item To implement HTTP-based communication using a Flask server
+          for real-time data transmission and remote accessibility.
+    \item To enable simultaneous multi-platform data storage by
+          integrating:
+          \begin{itemize}
+              \item SQLite for on-device local storage
+              \item Firebase Realtime Database for cloud-based remote
+                    accessibility
+              \item ThingSpeak for IoT data visualisation and charting
+          \end{itemize}
+    \item To validate the complete framework experimentally, covering
+          both autonomous navigation performance and continuous
+          environmental data acquisition.
+\end{enumerate}
+
+\section{Scope of the Study}
+
+This study covers the design and prototype-level implementation of the
+full framework. On the sensing side, this includes reading temperature,
+humidity, and air quality from an Arduino-interfaced sensor pair,
+processing and classifying those readings on a Raspberry Pi~3, and
+distributing the data across SQLite, Firebase, ThingSpeak, and a
+live Flask dashboard simultaneously.
+
+On the navigation side, the scope covers training a custom YOLOv8n-seg
+instance segmentation model on a red-tape indoor path dataset,
+optimising it for embedded deployment via ONNX conversion, and running
+a PID-based steering controller in a four-thread concurrent software
+architecture on a Raspberry Pi~5. Experimental evaluation uses 20
+manual teleoperation trials and 20 autonomous navigation trials on a
+fixed rectangular indoor test path.
+
+The study does not extend to outdoor environments, curved dynamic paths,
+multi-robot coordination, or sensor types beyond the DHT11 and MQ135.
+The communication mechanism is HTTP over a local Wi-Fi network;
+cellular connectivity is outside the scope. The result is a validated
+prototype that demonstrates the feasibility of the proposed approach,
+rather than a production-hardened system.
+
+\section{Organisation of the Thesis}
+
+The remainder of this thesis is organised as follows:
+
+\begin{itemize}
+    \item \textbf{Chapter~2} reviews existing literature covering
+          mobile robotics, environmental monitoring, control strategies,
+          and communication frameworks. It identifies the research gaps
+          that motivated this work.
+    \item \textbf{Chapter~3} describes the complete system methodology:
+          hardware assembly, dataset collection, model training and
+          optimisation, autonomous navigation implementation, and the
+          environmental monitoring pipeline.
+    \item \textbf{Chapter~4} presents experimental results for both
+          subsystems, provides full statistical validation of navigation
+          performance, reports environmental monitoring outcomes,
+          and discusses the limitations of the current implementation.
+    \item \textbf{Chapter~5} synthesises the findings into conclusions,
+          evaluates the overall contribution of the framework, and
+          outlines concrete directions for future research and
+          development.
+\end{itemize}
+
+Taken together, the chapters present a coherent arc from problem
+identification and system design through to rigorous experimental
+validation. The reader who follows this sequence will understand not
+only what the framework does but also how each design choice was
+arrived at, what alternatives were considered, and where the work
+can be meaningfully extended. The intention throughout has been
+transparency: every hardware decision, every software parameter, and
+every experimental result is reported in sufficient detail for the
+work to be reproduced independently.

@@ -1,0 +1,385 @@
+% ── Chapter 2: Literature Review ─────────────────────────────
+
+\chapter{Literature Review}
+
+\section{Introduction}
+
+This chapter traces the development of ideas and systems that are
+directly relevant to the framework built in this work. The review
+covers four interrelated areas: vision-based mobile robot navigation,
+communication frameworks for distributed systems, control strategies,
+and IoT-based environmental monitoring. The goal is not just to
+catalogue what others have done but to understand where those efforts
+stopped short and why the proposed system needed to be built the way
+it was.
+
+The literature is organised roughly chronologically, which helps show
+how each area matured over time and why the gaps that remained in 2024
+were not incidental but structural, being the result of researchers working
+within separate disciplines that had limited cross-pollination.
+
+\section{Early Developments in Vision-Based Navigation and Control}
+
+The earliest serious work on vision-guided navigation for mobile robots
+appeared in the late 1990s, when image-based visual servoing and
+nonlinear control were still genuinely new ideas for this application.
+Ma et al.\ \cite{r5} laid important theoretical groundwork with a
+navigation system for nonholonomic mobile robots that used image-plane
+features to close the control loop. The limitation was that the work
+stayed in simulation; there was no physical robot, and the gap between
+simulation and real hardware was left unaddressed.
+
+Fang et al.\ \cite{r6} took the homography-based approach further,
+developing stable control laws using Lyapunov methods. The mathematics
+were rigorous, but again, experimental validation was absent. A later
+paper by the same group \cite{r7} introduced adaptive control
+strategies and included physical experiments, which was a significant
+step forward, although the experiments required structured environments
+with pre-placed visual markers, not something one would find in a
+general indoor space.
+
+Chen et al.\ \cite{r8} contributed a homography-based tracking control
+method that improved trajectory following under disturbances. Jean and
+Lian \cite{r14} later improved robustness by using geometric shape
+parameters rather than point features, which reduced sensitivity to
+partial occlusions. Both contributions, though valuable, were tied to
+controlled settings and predefined feature structures.
+
+Looking at these early works together, the pattern is clear: the focus
+was almost entirely on the navigation and control problem. Environmental
+sensing was not part of the picture, and communication was handled
+implicitly through wired connections in lab setups.
+
+\section{Communication Frameworks for Distributed Systems}
+
+Papadimitratos et al.\ \cite{r3} proposed a secure vehicular
+communication architecture that addressed reliability and security in
+dynamic, multi-node environments. This was largely a networking
+contribution; the sensing and application layers were outside its
+scope, but the architecture principles carry over directly to
+distributed IoT deployments.
+
+Research on LTE and IEEE 802.11p protocols \cite{r4,r16} further
+characterised the performance of different communication technologies
+under realistic loads. Mir and Filali \cite{r16} conducted a useful
+comparative study, though their results were simulation-based and the
+specific case of lightweight embedded monitoring systems was not
+addressed. Araniti et al.\ \cite{r4} analysed LTE for vehicular
+networking, showing that cellular networks could handle the data
+rates typical of real-time monitoring, providing a useful reference point for
+understanding what is achievable with cloud transmission from a mobile
+platform.
+
+What is missing from all of this communication research is any
+consideration of the application layer. Knowing that LTE can handle
+10~Mbps tells you nothing about how to build a Flask server that
+reliably pushes sensor readings to Firebase every 5 seconds. The
+translation from network-level performance to practical embedded
+system design was left as an exercise for the application developer.
+
+\section{Navigation, Control Strategies, and IoT-Based Monitoring}
+
+Yousif et al.\ \cite{r17} provided a comprehensive survey of visual
+odometry and SLAM techniques, covering everything from monocular
+systems to RGB-D approaches. The survey is a useful map of the field
+but does not include implementations, so it is more useful as a
+reference than as a practical guide.
+
+Pacheco and Luo \cite{r10} ran a direct experimental comparison
+between PID and Model Predictive Control on a physical mobile robot.
+Their conclusion that PID performs well enough for structured
+environments and is far easier to tune and maintain directly
+informed the control strategy chosen in this work. Shaban and Nada
+\cite{r9} reached similar conclusions comparing PID and PIP controllers,
+reinforcing the case for PID as the practical default.
+
+On the sensing side, Pushkaranand and Reddy \cite{r1} demonstrated an
+IoT-based vehicular pollution monitoring system that could acquire
+particulate matter and gas concentration data and push it to a web
+interface in near real time. Ben-Aboud et al.\ \cite{r2} developed a
+low-cost indoor air quality platform that logged CO$_2$, particulate
+matter, and volatile organic compound data to a cloud backend. These
+are direct predecessors of the monitoring subsystem described in
+this thesis. Both systems classified air quality into categories
+such as good, moderate, poor, and hazardous using CO$_2$ concentration
+thresholds drawn from established indoor air quality standards.
+Specifically, ASHRAE Standard 62.1 \cite{r46} and the WHO Indoor Air
+Quality Guidelines \cite{r47} both define acceptable CO$_2$ levels for
+occupied spaces and set thresholds above which ventilation is required.
+Research by Sepp\"{a}nen et al.\ \cite{r48} showed that CO$_2$
+concentrations above 1000\,ppm are associated with measurable health
+effects in occupants, while work by Satish et al.\ \cite{r49}
+demonstrated that even concentrations in the 1000--2500\,ppm range
+impair cognitive decision-making performance. These findings provide
+the scientific basis for the alert classification thresholds used in
+the monitoring subsystem of this project.
+
+Neither Pushkaranand et al.\ nor Ben-Aboud et al.\ included mobility.
+Both systems were fixed installations. The data they collected was
+representative of a single location, which is exactly the limitation
+that motivated integrating sensing with a mobile platform here.
+
+Pati and Kala \cite{r18} showed that vision-based robot following using
+PID control was feasible on physical hardware, demonstrating that the
+combination of visual feedback and proportional control is practical
+and not just theoretical. Xu et al.\ \cite{r19} and Zhang et al.\
+\cite{r20} added further experimental evidence on communication
+performance and homography calibration for vision systems, respectively.
+
+\section{Advances in Perception and Environmental Monitoring}
+
+The introduction of deep learning into mobile robotics perception
+changed the nature of the navigation problem. Siam et al.\ \cite{r12}
+showed that semantic segmentation with convolutional networks could
+achieve accuracy well beyond classical feature-based approaches for
+path and lane detection. Fauadi et al.\ \cite{r21} surveyed
+vision-based navigation more broadly, providing a useful taxonomy of
+available techniques and their computational requirements.
+
+Lozano Dom\'{i}nguez et al.\ \cite{r22} reviewed V2X, I2X, and P2X
+communication technologies and highlighted the increasing need for
+tight integration between sensing and communication systems, exactly
+the problem that remains largely unaddressed in the literature at
+a practical implementation level. Santana et al.\ \cite{r23} developed
+vehicle-mounted air quality monitoring using IoT and MQTT, which is
+probably the closest prior work to the framework described in this
+thesis. Their platform collected particulate matter and gaseous
+pollutant data from a moving vehicle and transmitted it to a cloud
+backend. The key difference is that their system was designed around
+a full-sized vehicle and focused on outdoor urban monitoring, not
+the indoor structured-path scenario addressed here.
+
+Dos Reis et al.\ \cite{r13} applied YOLO-based object detection to
+autonomous navigation and achieved strong results, though the
+computational cost was high for embedded deployment. Ben-Aboud et al.\
+\cite{r2} provided further evidence that low-cost IoT platforms could
+produce reliable air quality data, though mobility remained absent.
+
+\section{Recent Developments in Integration and System-Level Approaches}
+
+Papadeas et al.\ \cite{r24} surveyed real-time semantic segmentation
+techniques and identified the trade-offs between accuracy and
+computational cost that are particularly relevant for edge deployment.
+Their finding that lighter models (such as nano-scale architectures)
+can achieve near-comparable accuracy to much larger models at a
+fraction of the compute cost directly supported the choice of
+YOLOv8n-seg in this work.
+
+Noordin et al.\ \cite{r11}, Singh et al.\ \cite{r26}, and Saidi
+et al.\ \cite{r27} explored different control strategies for
+differential-drive platforms, collectively confirming that PID remains
+competitive despite its simplicity and that hybrid approaches offer
+modest gains at substantially higher implementation complexity.
+
+Shin et al.\ \cite{r28} and Petrov et al.\ \cite{r25} examined how
+communication technology (including 5G and V2X protocols) performs
+under real-world loads. Marroqu\'{i}n et al.\ \cite{r29} implemented
+a complete embedded vision navigation system and provided a good
+reference point for what is achievable on modern single-board computers
+in terms of inference throughput and system latency.
+
+More recent work from 2024 \cite{r30} has pushed further on perception
+and path detection using DeepLab-based architectures, achieving very
+high accuracy on controlled datasets. The trade-off, as with most
+deep learning approaches, is model complexity and the need for a GPU
+at inference time. For a Raspberry Pi~5 running at the edge, these
+models are not practical without hardware accelerators.
+
+\section{Research Gap}
+
+Reading through this body of work, the fragmentation is the most
+striking thing. There is solid work on navigation. There is solid work
+on IoT monitoring. There is solid work on communication frameworks.
+But no existing work, at least none that this review found,
+combines all three into a single mobile platform that has been built,
+deployed, and evaluated experimentally.
+
+The specific gaps that this thesis addresses are:
+
+\begin{itemize}
+    \item Environmental monitoring systems in the literature are fixed.
+          None of the reviewed systems mounts a sensor on a robot and
+          drives a repeatable path through a space to collect spatially
+          distributed data.
+    \item Communication research operates at the network level and does
+          not address the application-layer design decisions needed for
+          real-time IoT deployment on embedded hardware.
+    \item Navigation systems are evaluated without any environmental
+          sensing payload. Adding a sensor subsystem changes the
+          real-time constraints on the system and needs to be validated
+          rather than assumed.
+    \item No reviewed work separates the mobility subsystem from the
+          sensing subsystem as independent modules that can be developed
+          and maintained separately but deployed together.
+    \item Multi-platform cloud storage, specifically writing simultaneously to a
+          local database, a cloud backend, and an IoT analytics platform
+          from a mobile embedded system, has not been demonstrated or
+          validated in the reviewed literature.
+\end{itemize}
+
+These gaps directly motivate the design choices and experimental scope
+of this work.
+
+\section{Summary}
+
+The evolution from early simulation-only navigation studies through to
+embedded deep learning and IoT monitoring reflects both the maturation
+of the individual fields and, more clearly, their continued isolation
+from each other. Each area has developed impressive capabilities. What
+has not kept pace is integration, and that is the problem this project
+takes on.
+
+The research gaps identified above guided every major design decision:
+the choice of HTTP over MQTT, the separation of the Raspberry Pi~3
+(monitoring) from the Raspberry Pi~5 (navigation), the use of a modular
+software architecture, and the experimental protocol of 40 independent
+trials across two operating modes. The literature survey is summarised
+in Table~\ref{tab:litsurvey}.
+
+% ── Literature Summary Table ─────────────────────────────────
+\begingroup
+\small
+\setstretch{1.0}
+\begin{longtable}{>{\centering\arraybackslash}p{0.7cm}
+                  >{\centering\arraybackslash}p{0.7cm}
+                  >{\RaggedRight\arraybackslash}p{2.8cm}
+                  >{\RaggedRight\arraybackslash}p{2.8cm}
+                  >{\RaggedRight\arraybackslash}p{2.8cm}
+                  >{\RaggedRight\arraybackslash}p{2.7cm}}
+\caption{Summary of Literature Survey.}
+\label{tab:litsurvey}\\
+\toprule
+\textbf{Ref.} & \textbf{Year} & \textbf{Methodology} & \textbf{Achievements}
+  & \textbf{Research Gap} & \textbf{Motivation} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Ref.} & \textbf{Year} & \textbf{Methodology} & \textbf{Achievements}
+  & \textbf{Research Gap} & \textbf{Motivation} \\
+\midrule
+\endhead
+\bottomrule
+\endfoot
+%
+\cite{r5}  & 1999 & Image-based visual servoing with EKF and nonlinear control
+  & Established theoretical framework for vision-based robot navigation
+  & Only simulation-based, no real implementation
+  & Provides foundational base for mobile navigation \\ \hline
+\cite{r6}  & 2002 & Homography-based visual servoing with Lyapunov stability
+  & Developed stable control laws for robot motion
+  & No experimental validation
+  & Supports vision-based control concepts \\ \hline
+\cite{r7}  & 2005 & Homography-based adaptive control
+  & Achieved experimental validation of trajectory control
+  & Requires structured environment
+  & Provides practical control approach \\ \hline
+\cite{r8}  & 2006 & Nonlinear adaptive control with homography tracking
+  & Improved trajectory tracking accuracy
+  & Needs predefined visual features
+  & Useful for trajectory tracking understanding \\ \hline
+\cite{r14} & 2007 & Shape-based visual servo control
+  & Improved robustness of control system
+  & Limited real-world benchmarking
+  & Enhances control stability understanding \\ \hline
+\cite{r3}  & 2008 & Secure communication protocols
+  & Provided reliable communication architecture
+  & No sensing integration
+  & Basis for communication design \\ \hline
+\cite{r15} & 2013 & MPC and Kalman filtering
+  & Robust trajectory tracking under noise
+  & High computational complexity
+  & Advanced control reference \\ \hline
+\cite{r4}  & 2013 & LTE-based communication analysis
+  & Identified scalable communication solutions
+  & No monitoring integration
+  & Helps in communication understanding \\ \hline
+\cite{r9}  & 2013 & PID vs PIP control comparison
+  & Experimental validation of control methods
+  & Limited test conditions
+  & Supports control selection \\ \hline
+\cite{r16} & 2014 & LTE vs 802.11p simulation
+  & Compared communication technologies
+  & No real-world implementation
+  & Helps in choosing communication method \\ \hline
+\cite{r17} & 2015 & SLAM and visual odometry survey
+  & Comprehensive navigation techniques overview
+  & No experimental validation
+  & Provides background knowledge \\ \hline
+\cite{r10} & 2015 & PID vs MPC experimental comparison
+  & Demonstrated performance trade-offs
+  & MPC complexity
+  & Supports simpler control methods \\ \hline
+\cite{r1}  & 2015 & IoT-based environmental monitoring
+  & Enabled real-time sensing
+  & No mobility integration
+  & Direct motivation for monitoring system \\ \hline
+\cite{r18} & 2017 & Vision-based robot following using PID
+  & Real robot implementation
+  & Limited evaluation
+  & Shows practical feasibility \\ \hline
+\cite{r19} & 2017 & DSRC vs LTE field experiments
+  & Evaluated communication performance
+  & No sensing integration
+  & Helps communication understanding \\ \hline
+\cite{r20} & 2017 & Homography calibration
+  & Improved vision system accuracy
+  & No monitoring integration
+  & Supports perception accuracy \\ \hline
+\cite{r12} & 2018 & CNN-based segmentation
+  & Improved perception accuracy
+  & High computational cost
+  & Supports perception systems \\ \hline
+\cite{r21} & 2018 & Vision navigation review
+  & Provided system overview
+  & No experimental validation
+  & Background reference \\ \hline
+\cite{r22} & 2019 & V2X communication survey
+  & Identified communication trends
+  & No sensing integration
+  & Highlights research gap \\ \hline
+\cite{r23} & 2019 & IoT + MQTT mobile monitoring
+  & Real-time environmental monitoring
+  & Limited integration
+  & Directly relevant \\ \hline
+\cite{r13} & 2019 & YOLO-based object detection
+  & Improved navigation perception
+  & High computational requirements
+  & Supports perception \\ \hline
+\cite{r2}  & 2020 & IoT monitoring platform
+  & Low-cost sensing system
+  & No mobility integration
+  & Motivation for system design \\ \hline
+\cite{r24} & 2021 & Segmentation survey
+  & Identified trade-offs in perception methods
+  & No implementation
+  & Helps gap identification \\ \hline
+\cite{r25} & 2021 & Communication benchmarking
+  & Evaluated communication limits
+  & Limited real-world testing
+  & Supports communication analysis \\ \hline
+\cite{r11} & 2021 & PID vs fuzzy control
+  & Improved control performance
+  & No real implementation
+  & Supports control selection \\ \hline
+\cite{r26} & 2022 & ML-based navigation
+  & Improved navigation accuracy
+  & Limited integration
+  & Motivates integration \\ \hline
+\cite{r27} & 2022 & Fuzzy-PID control
+  & Improved system stability
+  & Complex tuning
+  & Motivates simpler approach \\ \hline
+\cite{r28} & 2023 & V2X communication evolution
+  & Improved communication efficiency
+  & No sensing integration
+  & Highlights communication gap \\ \hline
+\cite{r29} & 2023 & Embedded vision navigation
+  & Real-time system implementation
+  & Limited benchmarking
+  & Supports implementation \\ \hline
+\cite{r30} & 2024 & Advanced perception \& control methods
+  & High accuracy and performance
+  & Mostly simulation-based and complex
+  & Motivates simple integrated system \\
+\end{longtable}
+\endgroup

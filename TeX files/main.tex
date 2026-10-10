@@ -1,0 +1,464 @@
+% ============================================================
+%  main.tex  –  Master driver file
+%  Compile ONLY this file in Overleaf (set as Main Document)
+% ============================================================
+
+\documentclass[12pt,a4paper,oneside]{report}
+
+\usepackage[utf8]{inputenc}
+\usepackage{acronym}
+\usepackage[T1]{fontenc}
+\usepackage{adjustbox} % add to preamble
+\usepackage{microtype}  % prevents overfull hboxes / text overflow
+\usepackage{times}
+\usepackage{geometry}
+\geometry{top=2.5cm, bottom=2.5cm, left=3.5cm, right=2.5cm}
+\usepackage{graphicx}
+% Images are in the local Images/ subfolder
+\graphicspath{
+  {Images/}
+  {../YOLOv8-Path-Segmentation-RealTime-Optimization/Results/benchmark_results/}
+  {../YOLOv8-Path-Segmentation-RealTime-Optimization/Results/inference_results/}
+}
+% Allow LaTeX to handle filenames with unusual extensions or spaces
+\usepackage{grffile}
+% Treat .jfif files as JPEG (same binary format, different extension)
+\DeclareGraphicsRule{.jfif}{jpg}{.jfif}{}
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{setspace}
+\onehalfspacing
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{multirow}
+\usepackage{ragged2e}
+\usepackage{tabularx}
+\usepackage{enumerate}
+\usepackage{enumitem}
+\usepackage{caption}
+\captionsetup{justification=centering, font=small}
+\usepackage{url}
+\usepackage{placeins}
+\usepackage{cite}
+\usepackage{parskip}
+\usepackage{titlesec}
+\usepackage[linesnumbered,ruled,vlined]{algorithm2e}
+
+\titleformat{\chapter}[block]
+  {\normalfont\LARGE\bfseries\centering}{\thechapter}{1em}{}
+\titlespacing*{\chapter}{0pt}{-10pt}{20pt}
+\titleformat{\section}{\normalfont\large\bfseries}{\thesection}{1em}{}
+\titleformat{\subsection}{\normalfont\normalsize\bfseries}{\thesubsection}{1em}{}
+\titleformat{\subsubsection}{\normalfont\normalsize\itshape}{\thesubsubsection}{1em}{}
+
+% hyperref MUST be last
+\usepackage[
+  bookmarks=true,
+  colorlinks=true,
+  linkcolor=black,
+  citecolor=black,
+  urlcolor=blue,
+  pdfborder={0 0 0},
+  pdftitle={Implementation of a Communication-Integrated Mobile Environmental Monitoring Framework},
+  pdfauthor={Satwik Shreshth}
+]{hyperref}
+
+\setcounter{tocdepth}{3}
+\setcounter{secnumdepth}{3}
+
+% Front-matter unnumbered chapter heading
+\newcommand{\fmchapter}[1]{%
+  \clearpage\phantomsection
+  \begin{center}{\LARGE\bfseries #1}\end{center}
+  \vspace{0.5cm}
+  \addcontentsline{toc}{chapter}{#1}%
+}
+
+% ============================================================
+\begin{document}
+\renewcommand\bibname{References}
+\pagenumbering{roman}
+
+% ══════════════════════════════════════════════
+%  TITLE PAGE
+% ══════════════════════════════════════════════
+\begin{titlepage}
+\newgeometry{top=2cm, bottom=2cm, left=2.5cm, right=2.5cm}
+\begin{center}
+
+{\Large\bfseries Implementation of a Communication-Integrated Mobile\\[0.2cm]
+Environmental Monitoring Framework}
+
+\vspace{0.5cm}
+
+{\large A Dissertation Report}
+
+\vspace{0.3cm}
+
+{\itshape Submitted in partial fulfillment of\\[0.2cm]
+the requirements for the award of the degree of}
+
+\vspace{0.3cm}
+
+{\large\bfseries Master of Computer Applications}
+
+\vspace{0.5cm}
+
+{\large Submitted by}
+
+\vspace{0.1cm}
+
+{\large\bfseries Satwik Shreshth}\\[0.2cm]
+{\normalsize Roll No: 24MCA014}
+
+\vspace{0.5cm}
+
+{\normalsize Under Guidance of}
+
+\vspace{0.1cm}
+
+{\normalsize\bfseries Mr.\ Partha Pratim Ray}\\[0.2cm]
+{\normalsize Assistant Professor}\\[0.1cm]
+{\normalsize Department of Computer Applications}\\[0.1cm]
+{\normalsize Sikkim University}
+
+\vspace{0.4cm}
+
+{\normalsize Under the Co-Guidance of}
+
+\vspace{0.001cm}
+
+{\normalsize\bfseries Dr.\ Ravi Kant Jain}\\[0.2cm]
+{\normalsize Scientist F, Intelligent Systems Engineering Group}\\[0.1cm]
+{\normalsize CSIR--Central Mechanical Engineering Research Institute (CSIR-CMERI)}
+
+\vspace{0.6cm}
+
+\includegraphics[height=2.5cm]{SU_logojfif.jfif}
+\hspace{2cm}
+\includegraphics[height=2.5cm]{CMERI_logo.jfif}
+
+\vspace{0.4cm}
+
+{\large\bfseries Department of Computer Applications}\\[0.1cm]
+{\large\bfseries Sikkim University}\\[0.1cm]
+{\large\bfseries Gangtok-737102, India}
+
+\end{center}
+\restoregeometry
+\end{titlepage}
+% ══════════════════════════════════════════════
+%  DEDICATION
+% ══════════════════════════════════════════════
+\newpage
+\thispagestyle{plain}
+\vspace*{\fill}
+\begin{center}
+{\itshape\large
+  Inscribed to my parents, \textbf{Priya Tiwari} and \textbf{Ashok Kumar Tiwary},
+  whose sacrifices paved my path,\\
+  and sanctified by the grace of \textbf{Bhagwan Ram},
+  the divine strength that guided this work to completion.}
+\end{center}
+\vspace*{\fill}
+\phantomsection
+\addcontentsline{toc}{chapter}{Dedication}
+
+% ══════════════════════════════════════════════
+%  ACKNOWLEDGEMENTS
+% ══════════════════════════════════════════════
+\newpage
+\thispagestyle{plain}
+\fmchapter{Acknowledgements}
+
+{\setstretch{1.3}
+\noindent
+I am deeply grateful to \textbf{Mr.\ Partha Pratim Ray}, Assistant Professor,
+Department of Computer Applications, Sikkim University, for his guidance,
+encouragement, and the intellectual freedom he extended to me throughout this
+research. His mentorship has been invaluable in shaping this work.
+
+\vspace{0.45cm}
+\noindent
+I would like to express my sincere gratitude to \textbf{Dr.\ Ravi Kant Jain},
+Scientist F, Intelligent Systems Engineering Group, Central Scientific and Industrial Research~-- Central Mechanical
+Engineering Research Institute, Durgapur, for his expert guidance and for
+providing access to the advanced laboratory facilities and technical infrastructure
+at the institute. I am also thankful to \textbf{Dr.\ Naresh Chandra Murmu},
+Director, Central Scientific and Industrial Research~-- Central Mechanical Engineering Research Institute, for the opportunity to carry out part of my dissertation
+work at such a distinguished institution.
+
+\vspace{0.45cm}
+\noindent
+I extend my gratitude to the \textbf{Head of Department} and all the faculty
+members of the Department of Computer Applications, Sikkim University, for their
+constructive feedback and continued academic support throughout my research.
+
+\vspace{0.45cm}
+\noindent
+I also wish to thank the administrative and technical staff, as well as my fellow
+research scholars at both Sikkim University and the Intelligent Systems Engineering Group of the Central Scientific and Industrial Research~-- Central Mechanical Engineering Research Institute, for their
+cooperation, camaraderie, and collaborative spirit.
+
+\vspace{0.45cm}
+\noindent
+I am sincerely thankful to my friends, \textbf{Pragya Sharma} and
+\textbf{Suveer Kumar}, for their constant support, encouragement, and for making
+this journey truly memorable.
+
+\vspace{0.45cm}
+\noindent
+Finally, I am forever indebted to my parents, \textbf{Shree Ashok Kumar Tiwary}
+and \textbf{Smt.\ Priya Tiwari}, whose unconditional love, sacrifices, and
+blessings have been the bedrock of everything I have accomplished. This work would
+not have been possible without them.
+
+\vspace{1.8cm}
+\begin{flushright}
+Satwik Shreshth\\
+Roll No: 24MCA014
+\end{flushright}
+}
+% ══════════════════════════════════════════════
+%  DECLARATION
+% ══════════════════════════════════════════════
+\newpage
+\thispagestyle{plain}
+\fmchapter{Declaration}
+
+\noindent
+I, \textbf{Satwik Shreshth}, Roll No.\ \textbf{24MCA014}, a student of the 4th
+semester of the Master of Computer Applications at Sikkim University, Gangtok,
+declare that this research is my original work, contains no unauthorized
+third-party copyrighted material, and has not been submitted elsewhere for any
+academic qualification.
+
+\vspace{0.6cm}
+\noindent
+Any third-party material included has been appropriately handled by referencing
+ with URLs provided where possible.
+
+\vspace{3cm}
+\begin{flushright}
+Satwik Shreshth\\
+Roll No: 24MCA014\\[0.4cm]
+Date:\underline{\hspace{4cm}}
+\end{flushright}
+% ══════════════════════════════════════════════
+%  CERTIFICATE FROM SUPERVISOR
+% ══════════════════════════════════════════════
+\newpage
+\thispagestyle{plain}
+\fmchapter{Certificate from Supervisor}
+
+\noindent
+This is to certify that \textbf{Mr.\ Satwik Shreshth}, Roll No.\ \textbf{24MCA014},
+a student of the 4th Semester of Master of Computer Applications, is a registered
+candidate under the Department of Computer Applications, Sikkim University, Gangtok.
+
+\vspace{0.6cm}
+\noindent
+The undersigned certifies that the candidate has completed all requirements for the
+submission of the dissertation entitled \textbf{``Implementation of a
+Communication-Integrated Mobile Environmental Monitoring Framework.''} This work was
+carried out under my supervision and guidance, in collaboration with CSIR-CMERI, Durgapur.
+
+\vspace{0.6cm}
+\noindent
+I hereby recommend the acceptance of this dissertation in partial fulfillment of the
+requirements for the award of the Degree of Master of Computer Applications.
+
+\vspace{3cm}
+\begin{flushright}
+\textbf{Mr.\ Partha Pratim Ray}\\
+Assistant Professor\\
+Department of Computer Applications\\
+Sikkim University, Gangtok, India\\[0.4cm]
+Date:\underline{\hspace{4cm}}
+\end{flushright}
+% ══════════════════════════════════════════════
+%  CERTIFICATE FROM CO-SUPERVISOR
+% ══════════════════════════════════════════════
+\newpage
+\thispagestyle{plain}
+\fmchapter{Certificate from Co-Supervisor}
+
+\noindent
+This is to certify that \textbf{Mr.\ Satwik Shreshth}, Roll No.\ \textbf{24MCA014},
+a student of the 4th Semester of Master of Computer Applications at Sikkim
+University, has successfully carried out his dissertation research at the Intelligent
+Systems Engineering Group, CSIR--Central Mechanical Engineering Research Institute
+(CSIR-CMERI), Durgapur.
+
+\vspace{0.6cm}
+\noindent
+The research presented in the dissertation entitled \textbf{``Implementation of a
+Communication-Integrated Mobile Environmental Monitoring Framework''} was conducted
+under my co-supervision. I certify that the candidate has fulfilled
+all the technical and academic requirements for the submission of this work.
+
+\vspace{0.6cm}
+\noindent
+I hereby recommend the acceptance of this dissertation in partial fulfillment of the
+requirements for the award of the Degree of Master of Computer Applications.
+
+\vspace{3cm}
+\begin{flushright}
+\textbf{Dr.\ Ravi Kant Jain}\\
+Scientist `F'\\
+Intelligent Systems Engineering Group\\
+CSIR-CMERI, Durgapur, India\\[0.4cm]
+Date:\underline{\hspace{4cm}}
+\end{flushright}
+
+% ══════════════════════════════════════════════
+%  CERTIFICATE FROM HEAD OF DEPARTMENT
+% ══════════════════════════════════════════════
+\newpage
+\thispagestyle{plain}
+\fmchapter{Certificate from Head of Department}
+
+\noindent
+This is to certify that \textbf{Mr.\ Satwik Shreshth}, Roll No.\ \textbf{24MCA014},
+a student of the 4th Semester of the Master of Computer Applications programme,
+has satisfactorily completed his dissertation work under the supervision of
+\textbf{Mr.\ Partha Pratim Ray}, Assistant Professor, Department of Computer
+Applications, Sikkim University, and under the co-supervision of
+\textbf{Dr.\ Ravi Kant Jain}, Scientist F, Intelligent Systems Engineering Group,
+CSIR--Central Mechanical Engineering Research Institute (CSIR-CMERI), Durgapur.
+
+\vspace{0.6cm}
+\noindent
+The dissertation entitled \textbf{``Implementation of a Communication-Integrated
+Mobile Environmental Monitoring Framework''} has been carried out by the candidate
+in partial fulfillment of the requirements for the award of the Degree of Master
+of Computer Applications from Sikkim University.
+
+\vspace{0.6cm}
+\noindent
+I am satisfied with the work done by the candidate, and I recommend the submission
+of this dissertation for further evaluation.
+
+\vspace{3cm}
+\begin{flushright}
+\textbf{Head of the Department}\\
+Department of Computer Applications\\
+Sikkim University, Gangtok, India\\[0.4cm]
+Date:\underline{\hspace{4cm}}
+\end{flushright}
+
+% ══════════════════════════════════════════════
+%  ABSTRACT  
+% ══════════════════════════════════════════════
+\newpage
+\thispagestyle{plain}
+\fmchapter{Abstract}
+
+\noindent
+Fixed-location indoor environmental monitoring systems fail to capture spatial
+variation in air quality, temperature, and humidity across a room. This work
+presents a communication-integrated mobile environmental monitoring framework
+that mounts a real-time sensor suite on an autonomous mobile robot to address
+this limitation. The navigation subsystem, deployed on a Raspberry Pi~5, employs
+a You Only Look Once Version~8 Nano Segmentation instance segmentation model exported to Open Neural Network Exchange format for optimised
+Central Processing Unit inference, detecting a red adhesive tape path via a downward-facing camera.
+Lateral deviation is computed as the Euclidean distance between the detected path
+centroid and the robot's reference frame centre, which drives a
+Proportional-Integral-Derivative steering controller. The environmental
+subsystem, running independently on a Raspberry Pi~3, acquires temperature,
+humidity, and air quality data from a Digital Humidity and Temperature Sensor~11 and Air Quality Sensor Module~135 sensor pair via an Arduino
+interface, converts raw Analogue-to-Digital Converter readings to calibrated \(\text{CO}_2\) estimates in
+parts per million, and applies a six-level rule-based alert classification
+aligned with established indoor air quality standards. Sensor data are
+transmitted concurrently to a local Structured Query Language Lite database, Firebase Realtime Database,
+ThingSpeak Internet of Things channel, and a Flask web dashboard. The dual-processor architecture
+ensures computational isolation between navigation and monitoring tasks.
+Experimental results validate the feasibility of real-time, spatially-aware
+indoor environmental monitoring using low-cost embedded hardware.
+
+\vspace{0.6cm}
+\noindent\textbf{Keywords:} Mobile Robot, Path Segmentation, Proportional-Integral-Derivative Control, Autonomous Navigation, Environmental Monitoring.
+% ══════════════════════════════════════════════
+%  TOC / LOF / LOT
+% ══════════════════════════════════════════════
+\clearpage
+\phantomsection
+\addcontentsline{toc}{chapter}{Contents}
+\tableofcontents
+
+\clearpage
+\phantomsection
+\addcontentsline{toc}{chapter}{List of Figures}
+\listoffigures
+
+\clearpage
+\phantomsection
+\addcontentsline{toc}{chapter}{List of Tables}
+\listoftables
+
+% ══════════════════════════════════════════════
+%  LIST OF ABBREVIATIONS
+% ══════════════════════════════════════════════
+\clearpage
+\phantomsection
+\addcontentsline{toc}{chapter}{List of Abbreviations}
+\fmchapter{List of Abbreviations}
+
+\begin{acronym}[YOLOv8n-seg]
+  \acro{ADC}{Analogue-to-Digital Converter}
+  \acro{AQI}{Air Quality Index}
+  \acro{CO2}{Carbon Dioxide}
+  \acro{CPU}{Central Processing Unit}
+  \acro{CSIR}{Council of Scientific and Industrial Research}
+  \acro{CSIR-CMERI}{CSIR~--~Central Mechanical Engineering Research Institute}
+  \acro{DHT11}{Digital Humidity and Temperature Sensor (Model~11)}
+  \acro{ESP32}{Espressif Systems 32-bit Microcontroller}
+  \acro{FPS}{Frames Per Second}
+  \acro{GPIO}{General-Purpose Input/Output}
+  \acro{GPU}{Graphics Processing Unit}
+  \acro{HTTP}{Hypertext Transfer Protocol}
+  \acro{IAQ}{Indoor Air Quality}
+  \acro{IoT}{Internet of Things}
+  \acro{IP}{Internet Protocol}
+  \acro{ISEG}{Intelligent Systems Engineering Group}
+  \acro{JSON}{JavaScript Object Notation}
+  \acro{LAN}{Local Area Network}
+  \acro{MCA}{Master of Computer Applications}
+  \acro{mIoU}{Mean Intersection over Union}
+  \acro{MPC}{Model Predictive Control}
+  \acro{MQ135}{Air Quality Sensor Module (Model~135)}
+  \acro{MQTT}{Message Queuing Telemetry Transport}
+  \acro{ONNX}{Open Neural Network Exchange}
+  \acro{PID}{Proportional-Integral-Derivative}
+  \acro{PPM}{Parts Per Million}
+  \acro{PWM}{Pulse-Width Modulation}
+  \acro{REST}{Representational State Transfer}
+  \acro{RPi3}{Raspberry Pi~3}
+  \acro{RPi5}{Raspberry Pi~5}
+  \acro{SBC}{Single-Board Computer}
+  \acro{SDK}{Software Development Kit}
+  \acro{SQL}{Structured Query Language}
+  \acro{SQLite}{Structured Query Language Lite}
+  \acro{UART}{Universal Asynchronous Receiver-Transmitter}
+  \acro{UI}{User Interface}
+  \acro{USB}{Universal Serial Bus}
+  \acro{Wi-Fi}{Wireless Fidelity}
+  \acro{WSGI}{Web Server Gateway Interface}
+  \acro{YOLO}{You Only Look Once}
+  \acro{YOLOv8}{You Only Look Once Version~8}
+  \acro{YOLOv8n-seg}{You Only Look Once Version~8 Nano Segmentation}
+\end{acronym}
+
+% ══════════════════════════════════════════════
+%  MAIN MATTER  (arabic numbering from here)
+% ══════════════════════════════════════════════
+\clearpage
+\pagenumbering{arabic}
+
+\include{Chapter1}
+\include{Chapter2}
+\include{Chapter3}
+\include{Chapter4}
+\include{Chapter5}
+
+\end{document}

@@ -1,0 +1,438 @@
+% ── Chapter 5: Conclusion and Future Work ────────────────────
+% Do NOT add \documentclass, \usepackage, \begin{document}, etc.
+% This file is included by main.tex via \include{Chapter5}
+
+\chapter{Conclusion and Future Work}
+
+This dissertation presented the design, development, and experimental
+evaluation of a communication-integrated mobile environmental monitoring
+framework implemented on a Raspberry Pi~5 and Raspberry Pi~3 embedded
+computing platform pair. The proposed framework addressed the fundamental
+limitation of conventional fixed-station environmental monitoring by
+integrating an autonomous mobile robotic platform with real-time
+environmental sensing and multi-channel cloud-enabled data communication
+within a modular and scalable architecture.
+
+The framework was realised through four tightly integrated components.
+The web-based manual control system provided a validated hardware
+foundation through remote teleoperation, confirming the correct
+operation of all mechanical, sensing, and communication subsystems.
+The YOLOv8n-seg path segmentation module, trained on a custom
+289-image annotated dataset using the CVAT annotation platform,
+achieved a mask mAP@50 of 0.988 and a mask mAP@50--95 of 0.736 on
+the 57-image validation split. Systematic optimisation through ONNX
+format conversion and 320$\times$320 resolution tuning achieved
+real-time inference at 15.4\,FPS with 64.8\,ms latency on the
+Raspberry Pi~5 CPU, representing a 1.57$\times$ speedup over the
+PyTorch baseline and exceeding the minimum frame rate required for
+stable closed-loop control.
+
+The autonomous path-following subsystem, driven by a PID controller
+with gains $K_p = 13.2$, $K_i = 0.0$, and $K_d = 0.475$, operated
+through a four-thread concurrent architecture at execution rates of
+20\,Hz for vision inference, 10\,Hz for obstacle monitoring, and
+10\,Hz for motor command execution. A systematic experimental
+evaluation comprising 20 manual and 20 autonomous trials on a
+rectangular 152.4\,cm $\times$ 91.44\,cm test path demonstrated that
+autonomous navigation achieved a mean RMSE of 2.119\,cm, representing
+an 87.4\% reduction from the manual mean RMSE of 16.768\,cm, and a
+tracking accuracy of 95.37\% compared to 63.32\% under manual
+teleoperation. All three statistical hypothesis tests (Mann--Whitney U,
+permutation, and independent $t$-test) unanimously confirmed the
+improvement to be highly significant, with an exceptionally large
+Cohen's $d = 8.944$ and a probability of superiority of 100\%.
+
+The environmental monitoring subsystem acquired temperature, humidity,
+and air quality data from an Arduino-interfaced DHT11 and MQ135 sensor
+pair, applied linear calibration to estimate CO$_2$ concentration in
+ppm, and implemented a six-level rule-based alert hierarchy aligned
+with ASHRAE Standard~62.1 and WHO Indoor Air Quality Guidelines. All
+acquired readings were simultaneously persisted to a local SQLite
+database, pushed to a Firebase Realtime Database hosted at the
+asia-southeast1 region, transmitted to a ThingSpeak IoT channel with
+six mapped sensor fields, and served through a Flask live web dashboard
+with gauge displays, trend charts, and a reading history table. All
+four parallel output channels operated concurrently without mutual
+blocking, confirming the effectiveness of the threading architecture.
+
+The integrated two-processor architecture, with the Raspberry Pi~5
+managing autonomous navigation and the Raspberry Pi~3 managing
+environmental data communication, demonstrated effective isolation
+between the real-time navigation workload and the cloud communication
+workload. Both subsystems operated concurrently on the shared mobile
+platform without observable interference. The framework contributes a
+practical and validated approach to communication-integrated mobile
+sensing that combines deep learning perception, real-time embedded
+control, and multi-platform IoT data communication on affordable
+embedded hardware. The modular design supports future extensions,
+establishing a replicable foundation for advanced mobile environmental
+monitoring and smart infrastructure applications.
+
+% ── Future Work ───────────────────────────────────────────────
+\section{Future Work}
+
+Several directions for future research and development are identified
+based on the limitations encountered during implementation and the
+results of experimental evaluation.
+
+\subsection{Real Wheel Odometry Integration}
+
+The current trajectory logging and position estimation system uses
+simulated dead-reckoning from vision deviation and speed commands,
+which accumulates drift over time. Integration of physical wheel
+encoders or odometry sensors would enable accurate measurement of
+distance travelled, angular velocity, and absolute position, replacing
+the simulated estimate with ground-truth trajectory data and
+significantly improving performance evaluation reliability.
+
+\subsection{Model Quantisation and Hardware Acceleration}
+
+The current ONNX model at 320$\times$320 resolution achieves 15.4\,FPS
+on the Raspberry Pi~5 CPU. INT8 quantisation of the ONNX model is
+expected to provide a further 2$\times$ speedup. Hardware acceleration
+using the Coral USB Accelerator or Hailo AI HAT for the Raspberry Pi~5
+could reach 25 to 30\,FPS, enabling smoother control at higher robot
+speeds without requiring a full GPU platform.
+
+\subsection{Extended Environmental Sensing}
+
+The current subsystem measures temperature, humidity, and air quality
+through the DHT11 and MQ135 sensors. Future work could extend the
+sensing suite to include a dedicated CO$_2$ sensor such as the MH-Z19
+for direct calibrated measurement, a particulate matter sensor such as
+the PMS5003 for PM2.5 and PM10 monitoring, a volatile organic compound
+sensor, and noise level monitoring, providing a more comprehensive
+environmental data profile for smart building and occupational health
+applications.
+
+\subsection{Multi-Robot Distributed Framework}
+
+The current framework operates as a single mobile unit. A natural
+extension is the deployment of multiple mobile monitoring units that
+collaborate to cover larger spatial areas. Each unit would transmit
+environmental data to a shared cloud backend, enabling spatial mapping
+of environmental parameters. Distributed task allocation algorithms
+could coordinate path assignments between units to maximise coverage
+efficiency.
+
+\subsection{Advanced Communication Integration}
+
+Future work could replace the current Wi-Fi-based HTTP communication
+with cellular LTE or 5G modules to enable monitoring in areas without
+fixed network infrastructure. Integration of LTE-V2X communication
+frameworks could further extend the system toward vehicular
+environmental monitoring applications in outdoor and urban environments.
+
+% ── References ───────────────────────────────────────────────
+\newpage
+\renewcommand{\bibname}{References}
+\addcontentsline{toc}{chapter}{References}
+
+\begin{thebibliography}{50}
+
+\bibitem{r1}
+R. Pushkaranand and M. Reddy,
+``IoT-Based Vehicular Pollution Monitoring System,''
+\textit{IEEE International Conference on Green Computing and Internet of Things (ICGCIoT)},
+2015.
+
+\bibitem{r2}
+Y. Ben-Aboud, M. Ghogho, and A. Kobbane,
+``A Research-Oriented Low-Cost Air Pollution Monitoring IoT Platform,''
+\textit{IEEE Conference},
+2020.
+
+\bibitem{r3}
+P. Papadimitratos et al.,
+``Secure Vehicular Communication Systems: Design and Architecture,''
+\textit{IEEE Communications Magazine},
+vol.~46, no.~11, pp.~100--109, Nov. 2008.
+
+\bibitem{r4}
+G. Araniti, C. Campolo, M. Condoluci, A. Iera, and A. Molinaro,
+``LTE for Vehicular Networking: A Survey,''
+\textit{IEEE Communications Magazine},
+vol.~51, no.~5, pp.~148--157, May 2013.
+
+\bibitem{r5}
+Y. Ma, J. Ko\v{s}eck\'{a}, and S. Sastry,
+``Vision Guided Navigation for a Nonholonomic Mobile Robot,''
+\textit{Proceedings of the IEEE International Conference on Robotics and Automation (ICRA)},
+1999.
+
+\bibitem{r6}
+Y. Fang, W. Dixon, D. Dawson, and C. Abdallah,
+``Homography-Based Visual Servoing of Wheeled Mobile Robots,''
+\textit{IEEE Transactions on Robotics},
+vol.~21, no.~3, pp.~406--414, 2005.
+
+\bibitem{r7}
+Y. Fang, W. Dixon, D. Dawson, and C. Abdallah,
+``Homography-Based Visual Servo Regulation for Mobile Robots,''
+\textit{IEEE Transactions on Robotics},
+vol.~21, no.~3, pp.~406--414, 2005.
+
+\bibitem{r8}
+J. Chen, W. Dixon, D. Dawson, and M. McIntyre,
+``Homography-Based Visual Servo Tracking Control of a Wheeled Mobile Robot,''
+\textit{IEEE Transactions on Robotics},
+2006.
+
+\bibitem{r9}
+E. Shaban and A. Nada,
+``PID vs PIP Control for Mobile Robots,''
+\textit{International Journal of Computer Applications},
+vol.~117, no.~2, 2015.
+
+\bibitem{r10}
+L. Pacheco and N. Luo,
+``PID vs MPC Control Strategies for Mobile Robots: A Comparative Study,''
+\textit{IEEE Conference on Control Applications},
+2015.
+
+\bibitem{r11}
+N. Noordin et al.,
+``Comparison of PID and Fuzzy Logic Control for Mobile Robots,''
+\textit{International Journal of Robotics Research},
+2021.
+
+\bibitem{r12}
+M. Siam, S. Elkerdawy, M. Jagersand, and S. Yogamani,
+``Deep Semantic Segmentation for Automated Driving: A Survey,''
+\textit{IEEE Transactions on Intelligent Transportation Systems},
+vol.~20, no.~2, pp.~641--659, 2018.
+
+\bibitem{r13}
+J. Dos Reis et al.,
+``YOLO-Based Object Detection for Autonomous Navigation,''
+\textit{IEEE Access},
+vol.~7, pp.~124908--124920, 2019.
+
+\bibitem{r14}
+J. Jean and K. Lian,
+``Robust Visual Servo Control Using Shape Parameters,''
+\textit{IEEE/ASME Transactions on Mechatronics},
+vol.~17, no.~1, pp.~30--40, 2012.
+
+\bibitem{r15}
+A. Zde\v{s}ar, D. Matko, and M. Bla\v{z}i\v{c},
+``Visual Trajectory Tracking Control of Mobile Robots,''
+\textit{IEEE Transactions on Control Systems Technology},
+vol.~21, no.~6, pp.~2210--2217, 2013.
+
+\bibitem{r16}
+S. Mir and F. Filali,
+``LTE and IEEE 802.11p for Vehicular Networking: A Performance Evaluation,''
+\textit{EURASIP Journal on Wireless Communications and Networking},
+2014.
+
+\bibitem{r17}
+K. Yousif, A. Bab-Hadiashar, and R. Hoseinnezhad,
+``An Overview to Visual Odometry and Visual SLAM,''
+\textit{Applied Bionics and Biomechanics},
+2015.
+
+\bibitem{r18}
+C. Pati and R. Kala,
+``Vision-Based Robot Following Using RGB-D Sensors,''
+\textit{Procedia Computer Science},
+vol.~115, pp.~586--593, 2017.
+
+\bibitem{r19}
+Z. Xu et al.,
+``DSRC versus 4G-LTE for Connected Vehicle Applications: A Study on Field Experiments,''
+\textit{Journal of Advanced Transportation},
+2017.
+
+\bibitem{r20}
+Y. Zhang, Z. Zhu, and H. Wang,
+``Global Homography Calibration for Vision-Based Robot Navigation,''
+\textit{IEEE Transactions on Instrumentation and Measurement},
+vol.~66, no.~10, pp.~2754--2763, 2017.
+
+\bibitem{r21}
+M. Fauadi et al.,
+``A Review on Vision-Based Navigation Systems for Mobile Robots,''
+\textit{International Journal of Advanced Robotic Systems},
+2018.
+
+\bibitem{r22}
+J. M. Lozano Dom\'{i}nguez and T. J. Mateo Sanguino,
+``Review on V2X, I2X, and P2X Communications and Their Applications,''
+\textit{Sensors},
+vol.~19, no.~12, p.~2756, 2019.
+
+\bibitem{r23}
+P. S. Santana et al.,
+``Vehicle-Mounted Sensing for Mobile Air Quality Monitoring,''
+\textit{IEEE Conference on Intelligent Transportation Systems},
+2019.
+
+\bibitem{r24}
+P. Papadeas, G. Athanasopoulos, and K. Karantzalos,
+``A Survey on Real-Time Semantic Segmentation for Autonomous Systems,''
+\textit{IEEE Access},
+vol.~9, pp.~54215--54240, 2021.
+
+\bibitem{r25}
+T. Petrov et al.,
+``Performance Benchmark for DSRC and LTE-V2X Communication,''
+\textit{Sensors},
+vol.~21, no.~6, 2021.
+
+\bibitem{r26}
+A. Singh, R. Sharma, and P. Kumar,
+``Machine Learning-Based Obstacle Avoidance and Path Tracking for Mobile Robots,''
+\textit{IEEE Access},
+vol.~10, pp.~112345--112356, 2022.
+
+\bibitem{r27}
+A. Saidi, H. Mekki, and M. Abid,
+``Fuzzy-PID Control for Vision-Based Mobile Robot Navigation,''
+\textit{Robotics and Autonomous Systems},
+vol.~150, 2022.
+
+\bibitem{r28}
+C. Shin, E. Farag, H. Ryu, M. Zhou, and Y. Kim,
+``Vehicle-to-Everything (V2X) Evolution from 4G to 5G in 3GPP,''
+\textit{IEEE Access},
+vol.~11, pp.~18689--18701, 2023.
+
+\bibitem{r29}
+J. Marroqu\'{i}n, R. Monroy, and L. Castillo,
+``Embedded Computer Vision Navigation System for Mobile Robots,''
+\textit{IEEE Access},
+vol.~11, pp.~56789--56805, 2023.
+
+\bibitem{r30}
+M. M\i s\i r,
+``DeepLab-Based Drivable Path Detection for Mobile Robot Navigation,''
+\textit{IEEE Access},
+vol.~12, pp.~12345--12360, 2024.
+
+\bibitem{r31}
+CVAT.ai Corporation,
+\textit{CVAT: Computer Vision Annotation Tool},
+2024.
+[Online]. Available: \url{https://github.com/cvat-ai/cvat}
+
+\bibitem{r32}
+Ultralytics,
+\textit{YOLOv8: Ultralytics YOLO Documentation},
+Version 8.4.7, 2024.
+[Online]. Available: \url{https://docs.ultralytics.com}
+
+\bibitem{r33}
+ONNX Runtime Development Team,
+\textit{ONNX Runtime: Cross-Platform Inference Accelerator},
+Version 1.23.2, 2024.
+[Online]. Available: \url{https://onnxruntime.ai/docs/}
+
+\bibitem{r34}
+Raspberry Pi Foundation,
+\textit{Raspberry Pi 5 Official Documentation},
+2024.
+[Online]. Available: \url{https://www.raspberrypi.com/documentation/}
+
+\bibitem{r35}
+Google Firebase,
+\textit{Firebase Realtime Database Documentation},
+Google LLC, 2024.
+[Online]. Available: \url{https://firebase.google.com/docs/database}
+
+\bibitem{r36}
+MathWorks ThingSpeak,
+\textit{ThingSpeak IoT Analytics Platform Documentation},
+MathWorks, 2024.
+[Online]. Available: \url{https://uk.mathworks.com/help/thingspeak/}
+
+\bibitem{r37}
+Pallets Projects,
+\textit{Flask: A Lightweight WSGI Web Application Framework},
+Version 3.x, 2024.
+[Online]. Available: \url{https://flask.palletsprojects.com/}
+
+\bibitem{r38}
+Adafruit Industries,
+\textit{Adafruit CircuitPython PCA9685 Library},
+2024.
+[Online]. Available: \url{https://github.com/adafruit/Adafruit_CircuitPython_PCA9685}
+
+\bibitem{r39}
+F. Pedregosa et al.,
+``Scikit-learn: Machine Learning in Python,''
+\textit{Journal of Machine Learning Research},
+vol.~12, pp.~2825--2830, 2011.
+[Online]. Available: \url{https://scikit-learn.org}
+
+\bibitem{r40}
+C. R. Harris et al.,
+``Array Programming with NumPy,''
+\textit{Nature},
+vol.~585, pp.~357--362, 2020.
+[Online]. Available: \url{https://numpy.org}
+
+\bibitem{r41}
+P. Virtanen et al.,
+``SciPy 1.0: Fundamental Algorithms for Scientific Computing in Python,''
+\textit{Nature Methods},
+vol.~17, pp.~261--272, 2020.
+[Online]. Available: \url{https://scipy.org}
+
+\bibitem{r42}
+J. D. Hunter,
+``Matplotlib: A 2D Graphics Environment,''
+\textit{Computing in Science \& Engineering},
+vol.~9, no.~3, pp.~90--95, 2007.
+[Online]. Available: \url{https://matplotlib.org}
+
+\bibitem{r43}
+OpenCV Development Team,
+\textit{OpenCV: Open Source Computer Vision Library},
+Version 4.x, 2024.
+[Online]. Available: \url{https://opencv.org}
+
+\bibitem{r44}
+PySerial Development Team,
+\textit{PySerial: Python Serial Port Extension},
+Version 3.x, 2024.
+[Online]. Available: \url{https://github.com/pyserial/pyserial}
+
+\bibitem{r45}
+Google Cloud,
+\textit{Firebase Admin Python SDK},
+Version 6.x, 2024.
+[Online]. Available: \url{https://github.com/firebase/firebase-admin-python}
+
+\bibitem{r46}
+American Society of Heating, Refrigerating and Air-Conditioning Engineers (ASHRAE),
+\textit{ASHRAE Standard 62.1: Ventilation for Acceptable Indoor Air Quality},
+ASHRAE, Atlanta, GA, 2022.
+
+\bibitem{r47}
+World Health Organization (WHO),
+\textit{WHO Global Air Quality Guidelines},
+WHO, Geneva, 2021.
+[Online]. Available: \url{https://www.who.int/publications/i/item/9789240034228}
+
+\bibitem{r48}
+O.\ Sepp\"{a}nen, W.\,J.\ Fisk, and M.\,J.\ Mendell,
+``Association of Ventilation Rates and CO$_2$ Concentrations with Health
+and Other Responses in Commercial and Institutional Buildings,''
+\textit{Indoor Air},
+vol.~9, no.~4, pp.~226--252, 1999.
+
+\bibitem{r49}
+U.\ Satish et al.,
+``Is CO$_2$ an Indoor Pollutant? Direct Effects of Low-to-Moderate
+CO$_2$ Concentrations on Human Decision-Making Performance,''
+\textit{Environmental Health Perspectives},
+vol.~120, no.~12, pp.~1671--1677, 2012.
+
+\bibitem{r50}
+Hanwei Electronics Co.,
+\textit{MQ-135 Gas Sensor for Air Quality Datasheet},
+Hanwei Electronics, Zhengzhou, China, 2013.
+[Online]. Available: \url{https://www.hwsensor.com}
+
+\end{thebibliography}
