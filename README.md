@@ -8,7 +8,7 @@ This repository contains the LaTeX source and the compiled PDF of my Master of C
 - **Supervisor:** Mr. Partha Pratim Ray, Assistant Professor, Department of Computer Applications, Sikkim University
 - **Co-Supervisor:** Dr. Ravi Kant Jain, Scientist F, Intelligent Systems Engineering Group, CSIR-Central Mechanical Engineering Research Institute (CSIR-CMERI)
 
-**Read the thesis:** [`Dissertation/Satwik Dissertation Report.pdf`](Dissertation/Satwik Dissertation Report.pdf)
+**Read the thesis:** [`Dissertation/Satwik_Dissertation_Report.pdf`](Dissertation/Satwik_Dissertation_Report.pdf)
 
 ## Abstract
 
@@ -37,12 +37,13 @@ Experimental results validate the feasibility of real-time, spatially aware indo
 .
 ├── Dissertation/     # Compiled dissertation (PDF)
 ├── TeX files/        # LaTeX source files (.tex, bibliography, figures)
-├── LICENSE           # CC BY 4.0
+├── LICENSE           # All rights reserved
 └── README.md
 ```
 
 - **`Dissertation/`**: the final PDF of the thesis.
 - **`TeX files/`**: everything needed to rebuild the PDF from source.
+
 
 ## How to Cite
 
@@ -59,6 +60,6 @@ Experimental results validate the feasibility of real-time, spatially aware indo
 
 ## License
 
-Copyright (c) 2026 Satwik Shreshth.
+Copyright (c) 2026 Satwik Shreshth. **All Rights Reserved.**
 
-This work is licensed under the [Creative Commons Attribution 4.0 International License (CC BY 4.0)](https://creativecommons.org/licenses/by/4.0/). You are free to share and adapt the material, provided you give appropriate credit, link to the license, and indicate if changes were made. See [`LICENSE`](LICENSE) for the full legal text.
+This work is made available for viewing only. Copying, redistribution, modification, and commercial use are not permitted without prior written permission from the author. Short quotations with proper citation, as allowed by applicable law, are fine. See [`LICENSE`](LICENSE) for details.
